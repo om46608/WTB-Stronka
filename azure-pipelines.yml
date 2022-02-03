@@ -40,9 +40,9 @@ stages:
               serverUrl: 'ftp://ftp.ostapko.webd.pro'
               username: 'mateusz@ostapko.com'
               password: 'mateusz123!'
-              rootDirectory: '$(Build.ArtifactStagingDirectory)'
-              filePatterns: '**'
-              remoteDirectory: '/PublishFiles/'
+              rootDirectory: './dist'
+              filePatterns: '*.html'
+              remoteDirectory: './'
               clean: true
               preservePaths: true
               trustSSL: false
