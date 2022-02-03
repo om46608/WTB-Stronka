@@ -29,7 +29,7 @@ stages:
     displayName: 'Deploy the website'
     jobs:
       - job: 'Build'
-        displayName: 'Build job'
+        displayName: 'Deploy job'
         pool:
           vmImage: ubuntu-latest
 
@@ -40,7 +40,7 @@ stages:
               serverUrl: 'ftp://ftp.ostapko.webd.pro'
               username: 'mateusz@ostapko.com'
               password: 'mateusz123!'
-              rootDirectory: './dist'
+              rootDirectory: './'
               filePatterns: '*.html'
               remoteDirectory: './'
               clean: true
