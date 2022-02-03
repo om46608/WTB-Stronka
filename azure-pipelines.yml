@@ -26,29 +26,23 @@ stages:
           - task: PublishBuildArtifacts@1
 
   - stage: 'Deploy'
-    displayName: 'Deploy the web application'
-    dependsOn: Build
+    displayName: 'Deploy the website'
     jobs:
-      - deployment: Deploy
+      - job: 'Build'
+        displayName: 'Build job'
         pool:
           vmImage: ubuntu-latest
-        variables:
-          - group: Release
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - download: current
-                  artifact: drop
-                - task: FtpUpload@2
-                  inputs:
-                    credentialsOption: 'inputs'
-                    serverUrl: 'ftp://ftp.ostapko.webd.pro'
-                    username: 'mateusz@ostapko.com'
-                    password: 'mateusz123!'
-                    rootDirectory: '$(Build.ArtifactStagingDirectory)'
-                    filePatterns: '**'
-                    remoteDirectory: '/PublishFiles/'
-                    clean: true
-                    preservePaths: true
-                    trustSSL: false
+
+        steps:
+          - task: FtpUpload@2
+            inputs:
+              credentialsOption: 'inputs'
+              serverUrl: 'ftp://ftp.ostapko.webd.pro'
+              username: 'mateusz@ostapko.com'
+              password: 'mateusz123!'
+              rootDirectory: '$(Build.ArtifactStagingDirectory)'
+              filePatterns: '**'
+              remoteDirectory: '/PublishFiles/'
+              clean: true
+              preservePaths: true
+              trustSSL: false
