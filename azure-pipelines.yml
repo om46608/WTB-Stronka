@@ -4,14 +4,52 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
+  - '*'
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  buildConfiguration: 'Release'
 
-steps:
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(build.sourcesDirectory)'
-    includeRootFolder: false
-- task: PublishBuildArtifacts@1
+stages:
+  - stage: 'Build'
+    displayName: 'Build the web application'
+    jobs:
+      - job: 'Build'
+        displayName: 'Build job'
+        pool:
+          vmImage: ubuntu-latest
+
+        steps:
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(build.sourcesDirectory)'
+              includeRootFolder: false
+          - task: PublishBuildArtifacts@1
+
+  - stage: 'Deploy'
+    displayName: 'Deploy the web application'
+    dependsOn: Build
+    jobs:
+      - deployment: Deploy
+        pool:
+          vmImage: ubuntu-latest
+        environment: dev
+        variables:
+          - group: Release
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+                - task: FtpUpload@2
+                  inputs:
+                    credentialsOption: 'inputs'
+                    serverUrl: 'ftp://ftp.ostapko.webd.pro'
+                    username: 'mateusz@ostapko.com'
+                    password: 'mateusz123!'
+                    rootDirectory: '$(Build.ArtifactStagingDirectory)'
+                    filePatterns: '**'
+                    remoteDirectory: '/PublishFiles/'
+                    clean: true
+                    preservePaths: true
+                    trustSSL: false
